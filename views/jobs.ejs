@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>PetCare</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="stylesheets/index.css" rel="stylesheet">
+  </head>
+	<body id="page-top" style="background-color: #D7CCC8;">
+		<%- include navbar.ejs %>
+		
+		<div id="wrapper">
+			<%- include sidebar.ejs %>
+			
+			<div id="content-wrapper">
+				<div class="container-fluid">
+                    <% if (status_pt_avail === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= pt_avail_msg %></div>
+					<% } else if (status_pt_avail === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= pt_avail_msg %></div>
+                    <% } %>
+
+                    <% if (status_ft_leave === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= ft_leave_msg %></div>
+					<% } else if (status_ft_leave === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= ft_leave_msg %></div>
+                    <% } %>
+
+                    <% if (status_isCaretaker === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= iscaretaker_msg %></div>
+					<% } else if (status_isCaretaker === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= iscaretaker_msg %></div>
+                    <% } %>
+
+                    <% if (status_onJob === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= onJob_msg %></div>
+					<% } else if (status_onJob === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= onJob_msg %></div>
+                    <% } %>
+
+                    <% if (status_workDays === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= workDays_msg %></div>
+					<% } else if (status_workDays === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= workDays_msg %></div>
+                    <% } %>
+
+                    <% if (status_deleted_availability === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= deleted_availability_msg %></div>
+					<% } else if (status_deleted_availability === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= deleted_availability_msg %></div>
+                    <% } %>
+
+                    <% if (status_deleted_work_leave === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= deleted_work_leave_msg %></div>
+					<% } else if (status_deleted_work_leave === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= deleted_work_leave_msg %></div>
+                    <% } %>
+
+                    <% if (status_acceptedOffer === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= acceptedOffer_msg %></div>
+					<% } else if (status_acceptedOffer === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= acceptedOffer_msg %></div>
+                    <% } %>
+
+                    <% if (status_rejectedOffer === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= rejectedOffer_msg %></div>
+					<% } else if (status_rejectedOffer === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= rejectedOffer_msg %></div>
+                    <% } %>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="card border-0">
+                                <div class="card-body text-right">
+                                    <% if (summary.length > 0) { %>
+                                    <h1 style="color:#435D7D"><%= summary[0].pet_days %></h1>
+                                    <% } else { %>
+                                        <h1 style="color:#435D7D">0</h1>
+                                    <% } %>
+                                    <small>Total Pets Days (this month)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0">
+                                <div class="card-body text-right">
+                                    <% if (summary.length > 0) { %>
+                                        <h1 style="color:#435D7D">&#36;<%= parseFloat(summary[0].monthly_earnings).toFixed(2) %></h1>
+                                    <% } else { %>
+                                        <h1 style="color:#435D7D">&#36;0.00</h1>
+                                    <% } %>
+                                    <small>Profits (this month)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0">
+                                <div class="card-body text-right">
+                                    <% if (summary.length > 0) { %>
+                                        <h1 style="color:#435D7D">&#36;<%= parseFloat(summary[0].monthly_salary).toFixed(2) %></h1>
+                                    <% } else { %>
+                                        <% if (basis == 'full-time') { %>
+                                            <h1 style="color:#435D7D">&#36;3000.00</h1>
+                                        <% } else { %>
+                                            <h1 style="color:#435D7D">&#36;0.00</h1>
+                                        <% } %>
+                                    <% } %>
+                                    <small>Expected Salary (this month)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (incoming_offers.length > 0) { %> 
+                        <div id="accordion">
+                            <div class="card mb-3 border-0">
+                                <div class="card-header" id="pendingOfferHeader" style="background-color: #435D7D; color: #fff; cursor: pointer" data-toggle="collapse" data-target="#pendingOfferBody" aria-expanded="true" aria-controls="pendingOfferBody">
+                                    Pending Offers
+                                </div>
+                                <div id="pendingOfferBody" class="collapse show" aria-labelledby="pendingOfferHeader" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" id="pendingOffersTable" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pet Owner</th>
+                                                        <th>Email</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+                                                        <th>Bid Price</th>
+                                                        <th>Payment via</th>
+                                                        <th>Transfer via</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for (var i = 0; i < incoming_offers.length; i++) { %>
+                                                        <tr>
+                                                            <td>
+                                                                <%= incoming_offers[i].owner_uname %>
+                                                                (<a href="#" data-toggle="modal" data-val="<%= i %>" data-val1="pending" data-target="#petInfo">Pet</a>)
+                                                            </td>
+                                                            <td>
+                                                                <%= incoming_offers[i].email %>
+                                                            </td>
+                                                            <td><%= incoming_offers[i].start_date %></td>
+                                                            <td><%= incoming_offers[i].end_date %></td>
+                                                            <td>&#36;<%= incoming_offers[i].bid_price %></td>
+                                                            <td><%= incoming_offers[i].payment_method %></td>
+                                                            <td><%= incoming_offers[i].transfer_type %></td>
+                                                            <td>
+                                                                <button class="btn btn-success" data-toggle="modal" data-val="<%= i %>" data-target="#acceptOffer"><i class="fas fa-check"></i></button>
+                                                                <button class="btn btn-danger" data-toggle="modal" data-val="<%= i %>" data-target="#rejectOffer"><i class="fa fa-times"></i></button>
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                    
+                    <div id="accordion1">
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" id="ongoingJobHeader" style="background-color: #435D7D; color: #fff; cursor: pointer" data-toggle="collapse" data-target="#ongoingJobBody" aria-expanded="true" aria-controls="ongoingJobBody">
+                                Ongoing Jobs
+                            </div>
+                            <div id="ongoingJobBody" class="collapse show" aria-labelledby="ongoingJobHeader" data-parent="#accordion1">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="ongoingJobsTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Pet Owner</th>
+                                                    <th>Email</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Bid Price</th>
+                                                    <th>Payment via</th>
+                                                    <th>Transfer via</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for (var i = 0; i < current_jobs.length; i++) { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= current_jobs[i].owner_uname %>
+                                                            (<a href="#" data-toggle="modal" data-val="<%= i %>" data-val1="ongoing" data-target="#petInfo">Pet</a>)
+                                                        </td>
+                                                        <td>
+                                                            <%= current_jobs[i].email %>
+                                                            
+                                                        </td>
+                                                        <td><%= current_jobs[i].start_date %></td>
+                                                        <td><%= current_jobs[i].end_date %></td>
+                                                        <td>&#36;<%= current_jobs[i].bid_price %></td>
+                                                        <td><%= current_jobs[i].payment_method %></td>
+                                                        <td><%= current_jobs[i].transfer_type %></td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+
+                    <div id="accordion2">
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" id="upcomingJobHeader" style="background-color: #435D7D; color: #fff; cursor: pointer" data-toggle="collapse" data-target="#upcomingJobBody" aria-expanded="true" aria-controls="upcomingJobBody">
+                                Upcoming Jobs
+                            </div>
+                            <div id="upcomingJobBody" class="collapse show" aria-labelledby="upcomingJobHeader" data-parent="#accordion2">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="upcomingJobsTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Pet Owner</th>
+                                                    <th>Email</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Bid Price</th>
+                                                    <th>Payment via</th>
+                                                    <th>Transfer via</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for (var i = 0; i < upcoming_jobs.length; i++) { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= upcoming_jobs[i].owner_uname %>
+                                                            (<a href="#" data-toggle="modal" data-val="<%= i %>" data-val1="upcoming" data-target="#petInfo">Pet</a>)
+                                                        </td>
+                                                        <td>
+                                                            <%= upcoming_jobs[i].email %>
+                                                        </td>
+                                                        <td><%= upcoming_jobs[i].start_date %></td>
+                                                        <td><%= upcoming_jobs[i].end_date %></td>
+                                                        <td>&#36;<%= upcoming_jobs[i].bid_price %></td>
+                                                        <td><%= upcoming_jobs[i].payment_method %></td>
+                                                        <td><%= upcoming_jobs[i].transfer_type %></td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="accordion3">
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" id="completedJobHeader" style="background-color: #435D7D; color: #fff; cursor: pointer" data-toggle="collapse" data-target="#completedJobBody" aria-expanded="true" aria-controls="completedJobBody">
+                                Completed Jobs
+                            </div>
+                            <div id="completedJobBody" class="collapse show" aria-labelledby="completedJobHeader" data-parent="#accordion3">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="completedJobsTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Pet Owner</th>
+                                                    <th>Email</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Bid Price</th>
+                                                    <th>Payment via</th>
+                                                    <th>Transfer via</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for (var i = 0; i < completed_jobs.length; i++) { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= completed_jobs[i].owner_uname %>
+                                                            (<a href="#" data-toggle="modal" data-val="<%= i %>" data-val1="completed" data-target="#petInfo">Pet</a>)
+                                                        </td>
+                                                        <td>
+                                                            <%= completed_jobs[i].email %>
+                                                        </td>
+                                                        <td><%= completed_jobs[i].start_date %></td>
+                                                        <td><%= completed_jobs[i].end_date %></td>
+                                                        <td>&#36;<%= completed_jobs[i].bid_price %></td>
+                                                        <td><%= completed_jobs[i].payment_method %></td>
+                                                        <td><%= completed_jobs[i].transfer_type %></td>
+                                                        <td>
+                                                            <% if (completed_jobs[i].rating && completed_jobs[i].review) { %>
+                                                            <button class="btn btn-secondary" data-toggle="modal" data-val="<%= i %>" data-target="#viewFeedback"><i class="fas fa-comments"></i></button>
+                                                            <% } %>
+                                                        </td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-0">
+                        <div class="card-header" style="background-color: #435D7D; color: #fff;">
+                            <% if (basis === 'part-time') { %>
+                                Indicate Availability
+                            <% } else if (basis === 'full-time') { %>
+                                Apply Leave
+                            <% } %>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="/add_work_leave" class="needs-validation" id="availabilityform" oninput='validate_date()'>
+								<div class="form-group row">
+                                    <% 
+                                        if (basis === 'part-time') { 
+                                            var today = new Date();
+                                            var day =  ("0" + today.getDate()).slice(-2);
+                                            var month = ('0' + (today.getMonth() + 1)).slice(-2); 
+                                            var year = today.getFullYear();
+                                            today = year + '-' + month + '-' + day;
+                                            var endDate = new Date();
+                                            endDate.setDate(endDate.getDate() - 1);
+                                            day = ("0" + endDate.getDate()).slice(-2);
+                                            month = ('0' + (endDate.getMonth() + 1)).slice(-2); 
+                                            year = endDate.getFullYear() + 2;
+                                            endDate = year + '-' + month + '-' + day;
+                                    %>
+                                        <div class="col-sm-4">
+                                            <label>Start Date</label>
+                                            <input type="date" name="startDate" placeholder="mm/dd/yyyy" max="<%= endDate %>" min="<%= today %>" class="form-control" id="startDate" required>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label>End Date</label>
+                                            <input type="date" name="endDate" placeholder="mm/dd/yyyy" max="<%= endDate %>" min="<%= today %>" class="form-control" id="endDate" required>
+                                        </div>
+                                    <% } else if (basis === 'full-time') { %>
+                                        <div class="col-sm-4">
+                                            <label>Start Date</label>
+                                            <input type="date" name="startDate" placeholder="mm/dd/yyyy" max="3000-12-31" min="1000-01-01" class="form-control" id="startDate" required>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label>End Date</label>
+                                            <input type="date" name="endDate" placeholder="mm/dd/yyyy" max="3000-12-31" min="1000-01-01" class="form-control" id="endDate" required>
+                                        </div>
+                                    <% } %>
+								</div>
+								<div>
+									<button class="btn btn-primary" type="submit">Apply</button>
+								</div>
+							</form>
+                        </div>
+                    </div>
+                    <% if (basis === 'part-time') { %>
+                    <div class="card mb-3 border-0">
+                        <div class="card-header" style="background-color: #435D7D; color: #fff;">
+                                My Availability
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="availabilityTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% for (var i = 0; i < pt_availability.length; i++) { %>
+                                        <tr>
+                                            <td><%= pt_availability[i].start_date %></td>
+                                            <td><%= pt_availability[i].end_date %></td>
+                                            <td>
+                                                <% if (new Date(pt_availability[i].start_date) > new Date()) { %>
+                                                    <button class="btn btn-danger" data-toggle="modal" data-val="<%= i %>" data-val1="pt" data-target="#delleave"><i class="fa fa-times"></i></button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <% } else if (basis === 'full-time') { %>
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" style="background-color: #435D7D; color: #fff;">
+                                My Leave
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="availabilityTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (var i = 0; i < ft_leave.length; i++) { %>
+                                            <tr>
+                                                <td><%= ft_leave[i].start_date %></td>
+                                                <td><%= ft_leave[i].end_date %></td>
+                                                <td>
+                                                    <% if (new Date(ft_leave[i].start_date) > new Date()) { %>
+                                                        <button class="btn btn-danger" data-toggle="modal" data-val="<%= i %>" data-val1="ft" data-target="#delleave"><i class="fa fa-times"></i></button>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+				</div>
+			</div>
+        </div>
+        
+		<!-- Pet Information Application Modal -->
+		<div class="modal fade" id="petInfo" tabindex="-1" role="dialog" aria-labelledby="petInfoLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="petInfoLabel">Pet Infomation</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+                        <div class="row">
+							<div class="col-md-5">
+								<b>Pet Name: </b>
+							</div>
+							<div class="col-md-7" id="petName">
+
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-5">
+								<b>Pet Type: </b>
+							</div>
+							<div class="col-md-7" id="petType">
+
+							</div>
+                        </div>
+                        <div class="row">
+							<div class="col-md-5">
+								<b>Gender: </b>
+							</div>
+							<div class="col-md-7" id="gender">
+
+							</div>
+						</div>
+                        <div class="row">
+							<div class="col-md-5">
+								<b>Special Requirements: </b>
+							</div>
+							<div class="col-md-7" id="specialRequirements">
+
+							</div>
+						</div>
+						<div class="text-right mt-4">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <!-- Accept Offer Application Modal -->
+		<div class="modal fade" id="acceptOffer" tabindex="-1" role="dialog" aria-labelledby="acceptOfferLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="acceptOfferLabel">Are you sure you want to accept?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/accept_job">
+                            <input type="hidden" name="ownerName" value="" id="petOwnerName"> 
+                            <input type="hidden" name="petName" value="" id="petName"> 
+                            <input type="hidden" name="startDate" value="" id="startDate"> 
+                            <input type="hidden" name="endDate" value="" id="endDate">                          
+                            <div class="text-right">
+                                <button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <!-- Reject Offer Application Modal -->
+		<div class="modal fade" id="rejectOffer" tabindex="-1" role="dialog" aria-labelledby="rejectOfferLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="rejectOfferLabel">Are you sure you want to reject?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/decline_job">
+                            <input type="hidden" name="ownerName" id="petOwnerName"> 
+                            <input type="hidden" name="petName" id="petName"> 
+                            <input type="hidden" name="startDate" id="startDate"> 
+                            <input type="hidden" name="endDate" id="endDate">                          
+                            <div class="text-right">
+                                <button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+        
+        <!-- Feedback Modal -->
+		<div class="modal fade" id="viewFeedback" tabindex="-1" role="dialog" aria-labelledby="viewFeedbackLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewFeedbackLabel">Feedback</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-3">
+								<b>Rating:</b>
+							</div>
+							<div class="col-md-9" id="ratings">
+
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-3">
+								<b>Comment:</b>
+							</div>
+							<div class="col-md-9" id="comments">
+
+							</div>
+						</div>
+						<div class="text-right mt-4">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+        
+        <!-- Delete Leave Modal -->
+		<div class="modal fade" id="delleave" tabindex="-1" role="dialog" aria-labelledby="delleaveLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="delleaveLabel">Are you sure you want to delete?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/delete_work_leave">
+                            <input type="hidden" name="startDate" id="startDate"> 
+                            <input type="hidden" name="endDate" id="endDate">                          
+                            <div class="text-right">
+                                <button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+        <%- include bottomscript.ejs %>
+        <script>
+			$(document).ready(function() {
+				$('#pendingOffersTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#upcomingJobsTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#ongoingJobsTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#completedJobsTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#availabilityTable').DataTable();
+            });
+            $('#petInfo').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var type = $(e.relatedTarget).data('val1');
+                if (type === "pending") {
+                    var incoming_offers = JSON.parse(htmlDecode("<%= JSON.stringify(incoming_offers) %>"));
+                    $('#petInfo #petName').text(incoming_offers[index].pet_name);
+                    $('#petInfo #petType').text(incoming_offers[index].pet_type);
+                    $('#petInfo #gender').text(incoming_offers[index].gender ? incoming_offers[index].gender : "NIL");
+                    $('#petInfo #specialRequirements').text(incoming_offers[index].special_needs ? incoming_offers[index].special_needs : "NIL");
+                } else if (type === "ongoing") {
+                    var current_jobs = JSON.parse(htmlDecode("<%= JSON.stringify(current_jobs) %>"));
+                    $('#petInfo #petName').text(current_jobs[index].pet_name);
+                    $('#petInfo #petType').text(current_jobs[index].pet_type);
+                    $('#petInfo #gender').text(current_jobs[index].gender ? current_jobs[index].gender : "NIL");
+                    $('#petInfo #specialRequirements').text(current_jobs[index].special_needs ? current_jobs[index].special_needs : "NIL");
+                } else if (type === "upcoming") {
+                    var upcoming_jobs = JSON.parse(htmlDecode("<%= JSON.stringify(upcoming_jobs) %>"));
+                    $('#petInfo #petName').text(upcoming_jobs[index].pet_name);
+                    $('#petInfo #petType').text(upcoming_jobs[index].pet_type);
+                    $('#petInfo #gender').text(upcoming_jobs[index].gender ? upcoming_jobs[index].gender : "NIL");
+                    $('#petInfo #specialRequirements').text(upcoming_jobs[index].special_needs ? upcoming_jobs[index].special_needs : "NIL");
+                } else if (type === "completed") {
+                    var completed_jobs = JSON.parse(htmlDecode("<%= JSON.stringify(completed_jobs) %>"));
+                    $('#petInfo #petName').text(completed_jobs[index].pet_name);
+                    $('#petInfo #petType').text(completed_jobs[index].pet_type);
+                    $('#petInfo #gender').text(completed_jobs[index].gender ? completed_jobs[index].gender : "NIL");
+                    $('#petInfo #specialRequirements').text(completed_jobs[index].special_needs ? completed_jobs[index].special_needs : "NIL");
+                }
+            });
+            $('#acceptOffer').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var incoming_offers = JSON.parse(htmlDecode("<%= JSON.stringify(incoming_offers) %>"));
+                $('#acceptOffer #petOwnerName').val(incoming_offers[index].owner_uname);
+                $('#acceptOffer #petName').val(incoming_offers[index].pet_name);
+                $('#acceptOffer #startDate').val(incoming_offers[index].start_date);
+                $('#acceptOffer #endDate').val(incoming_offers[index].end_date);
+            });
+            $('#rejectOffer').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var incoming_offers = JSON.parse(htmlDecode("<%= JSON.stringify(incoming_offers) %>"));
+                $('#rejectOffer #petOwnerName').val(incoming_offers[index].owner_uname);
+                $('#rejectOffer #petName').val(incoming_offers[index].pet_name);
+                $('#rejectOffer #startDate').val(incoming_offers[index].start_date);
+                $('#rejectOffer #endDate').val(incoming_offers[index].end_date);
+            });
+            $('#viewFeedback').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+				var completed_jobs = JSON.parse(htmlDecode("<%= JSON.stringify(completed_jobs) %>"));
+				$('#viewFeedback #ratings').text(completed_jobs[index].rating);
+				$('#viewFeedback #comments').text(completed_jobs[index].review);
+            });
+            $('#delleave').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var type = $(e.relatedTarget).data('val1');
+                if (type === 'pt') {
+                    var pt_availability = JSON.parse(htmlDecode("<%= JSON.stringify(pt_availability) %>"));
+                    $('#delleave #startDate').val(pt_availability[index].start_date);
+                    $('#delleave #endDate').val(pt_availability[index].end_date);
+                } else if (type === 'ft') {
+                    var ft_leave = JSON.parse(htmlDecode("<%= JSON.stringify(ft_leave) %>"));
+                    $('#delleave #startDate').val(ft_leave[index].start_date);
+                    $('#delleave #endDate').val(ft_leave[index].end_date);
+                }
+            });
+            function validate_date() {
+				var startDate = document.getElementById("startDate");
+                var endDate = document.getElementById("endDate"); 
+                var today = new Date();
+                startDate.setCustomValidity(today > new Date(startDate.value)
+                                        ? "Please provide a valid date."
+                                        : "");
+                endDate.setCustomValidity(new Date(startDate.value) > new Date(endDate.value)
+                                        ? "Please provide a valid end date."
+                                        : "");		
+            }
+		</script>
+  </body>
+</html>
+

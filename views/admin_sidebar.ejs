@@ -1,0 +1,24 @@
+<!-- Sidebar -->
+<ul class="sidebar navbar-nav">
+	<li class="nav-item <% if (page === 'admin_dashboard') { %> active <% } %>">
+		<a class="nav-link" href="<%= page==="admin_dashboard" ? "#" : "/admin_dashboard" %>">
+			<i class="fas fa-fw fa-address-card"></i> &nbsp;
+			<span>Dashboard</span>
+		</a>
+	</li>
+	<li class="nav-item <% if (page === 'admin_users') { %> active <% } %>">
+		<a class="nav-link" href="<%= page === 'admin_users' ? '#' : '/admin_users' %>">
+			<i class="fas fa-users"></i> &nbsp;
+			<span>Users</span></a>
+	</li>
+	<li class="nav-item <% if (page === 'admin_pets') { %> active <% } %>">
+		<a class="nav-link" href="<%= page==='admin_pets' ? '#' : '/admin_pets' %>">
+			<i class="fas fa-paw"></i> &nbsp;
+			<span>Pets</span></a>
+	</li>
+	<li class="nav-item <% if (page === 'admin_bids') { %> active <% } %>">
+		<a class="nav-link" href="<%= page==='admin_bids' ? '#' : '/admin_bids' %>">
+			<i class="fa fa-gavel"></i> &nbsp;
+			<span>Bids</span></a>
+	</li>
+</ul>

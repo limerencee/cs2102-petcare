@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>PetCare</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+		<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+
+		<!-- Custom styles for this template-->
+		<link href="stylesheets/index.css" rel="stylesheet">
+  </head>
+	<body id="page-top" style="background-color: #D7CCC8;">
+		<%- include navbar.ejs %>
+		
+		<div id="wrapper">
+			<%- include admin_sidebar.ejs %>
+			
+			<div id="content-wrapper">
+				<div class="container-fluid">
+					<% if (status_add === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= add_msg %></div>
+					<% } else if (status_add === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= add_msg %></div>
+					<% } %>
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;">Pet Daily Price</span>
+								<div class="btn-group" role="group">
+								  <button class="btn btn-success" data-toggle="modal" data-target="#addPetsType"><i class="fas fa-plus"></i> &nbsp; Add</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover" id="adminPetsTable" width="100%" cellspacing="0">
+									<thead>
+										<tr>
+											<th>Pet Type</th>
+											<th>Daily Base Price</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for(var i=0; i<pet_types_table.length; i++) { %>
+											<tr>
+												<td><%= pet_types_table[i].pet_type%></td>
+												<td>&#36;<%= pet_types_table[i].daily_base_price%></td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Add Pet Type Modal -->
+		<div class="modal fade" id="addPetsType" tabindex="-1" role="dialog" aria-labelledby="addPetsTypeLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addPetsTypeLabel">Add Pet Type</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/admin_pets">
+							<div class="form-group">
+								<label for="inputPetType">Pet Type</label>
+								<input type="text" id="inputPetType" class="form-control" placeholder="Enter the pet type" required="required" name="petType">
+							</div>
+							<div class="form-group">
+								<label for="inputBasePrice">Daily Base Price</label>
+								<input type="text" id="inputBasePrice" class="form-control" placeholder="Enter the daily base price" required="required" name="basePrice">
+							</div>
+							<div class="text-right">
+								<button class="btn btn-primary" type="submit">Submit</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<%- include bottomscript.ejs %>
+		<script>
+			$('#addPetsType').on('hidden.bs.modal', function (e) {
+				$('#addPetsType form')[0].reset();
+			})
+			$(document).ready(function() {
+				$('#adminPetsTable').DataTable();
+			} );
+		</script>
+  </body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>PetCare</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="stylesheets/index.css" rel="stylesheet">
+    </head>
+	<body id="page-top" style="background-color: #D7CCC8;">
+		<%- include navbar.ejs %>
+		<div id="wrapper">
+			<%- include sidebar.ejs %>
+			<div id="content-wrapper">
+				<div class="container-fluid">
+                    <% if (status_review === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= review_msg %></div>
+					<% } else if (status_review === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= review_msg %></div>
+                    <% } %>
+
+                    <% if (status_cancelledBid === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= cancelledBid_msg %></div>
+					<% } else if (status_cancelledBid === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= cancelledBid_msg %></div>
+                    <% } %>
+
+                    <% if (status_bid === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= bid_msg %></div>
+					<% } else if (status_bid === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= bid_msg %></div>
+                    <% } %>
+                    
+                    <% if (is_pet_owner) { %>
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" style="background-color: #435D7D; color: #fff;">
+                                Your Bids
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="pendingBidTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>CareTaker</th>
+                                                <th>Pet Name</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Bid Price</th>
+                                                <th>Transfer via</th>
+                                                <th>Payment via</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (var i = 0; i < pet_owner_ongoing_biddings.length; i++) { %>
+                                                <tr>
+                                                    <td><%= pet_owner_ongoing_biddings[i].ctaker_uname %></td>
+                                                    <td><%= pet_owner_ongoing_biddings[i].pet_name %></td>
+                                                    <td><%= pet_owner_ongoing_biddings[i].start_date %></td>
+                                                    <td><%= pet_owner_ongoing_biddings[i].end_date %></td>
+                                                    <td>&#36;<%= pet_owner_ongoing_biddings[i].bid_price %></td>
+                                                    <td><%= pet_owner_ongoing_biddings[i].transfer_type %></td>
+                                                    <td><%= pet_owner_ongoing_biddings[i].payment_method %></td>
+                                                    <td>
+                                                        <% if (pet_owner_ongoing_biddings[i].status == "pending") { %>
+                                                            <span class="badge badge-warning"><%= pet_owner_ongoing_biddings[i].status %></span>
+                                                        <% } else if (pet_owner_ongoing_biddings[i].status == "success") { %>
+                                                            <span class="badge badge-success"><%= pet_owner_ongoing_biddings[i].status %></span>
+                                                        <% } else if (pet_owner_ongoing_biddings[i].status == "fail") { %>
+                                                            <span class="badge badge-danger"><%= pet_owner_ongoing_biddings[i].status %></span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (pet_owner_ongoing_biddings[i].status == "pending" || pet_owner_ongoing_biddings[i].status == "fail") { %>
+                                                            <button class="btn btn-danger" data-toggle="modal" data-val="<%= i %>" data-target="#delBids"><i class="fa fa-times"></i></button>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                    <% if (pet_owner_past_biddings.length > 0) { %>
+                        <div class="card mb-3 border-0">
+                            <div class="card-header" style="background-color: #435D7D; color: #fff;">
+                                Your Past Transactions
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="pastBidTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>CareTaker</th>
+                                                <th>Pet Name</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Bid Price</th>
+                                                <th>Transfer via</th>
+                                                <th>Payment via</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (var i = 0; i < pet_owner_past_biddings.length; i++) { %>
+                                                <tr>
+                                                    <td><%= pet_owner_past_biddings[i].ctaker_uname %></td>
+                                                    <td><%= pet_owner_past_biddings[i].pet_name %></td>
+                                                    <td><%= pet_owner_past_biddings[i].start_date %></td>
+                                                    <td><%= pet_owner_past_biddings[i].end_date %></td>
+                                                    <td>&#36;<%= pet_owner_past_biddings[i].bid_price %></td>
+                                                    <td><%= pet_owner_past_biddings[i].transfer_type %></td>
+                                                    <td><%= pet_owner_past_biddings[i].payment_method %></td>
+                                                    <td>
+                                                        <% if (pet_owner_past_biddings[i].ratings == null && pet_owner_past_biddings[i].review == null) { %>
+                                                            <button class="btn btn-success" data-toggle="modal" data-val="<%= i %>" data-target="#addReviews"><i class="fas fa-comments"></i></button>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D; color: #fff;">
+							Active Biddings Table
+						</div>
+						<form method="post" action="#">
+							<div class="card-body">
+								<div class="table-responsive">
+                                    <table class="table table-hover" id="activeBidTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>CareTaker</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Bid Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (var i = 0; i < ongoing_biddings.length; i++) { %>
+                                                <tr>
+                                                    <td><%= ongoing_biddings[i].ctaker_uname %></td>
+                                                    <td><%= ongoing_biddings[i].start_date %></td>
+                                                    <td><%= ongoing_biddings[i].end_date %></td>
+                                                    <td>&#36;<%= ongoing_biddings[i].bid_price %></td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+							</div>
+						</form>
+                    </div>					
+				</div>
+			</div>
+        </div>
+        
+        <!-- Delete Pending/fail Bids Modal -->
+		<div class="modal fade" id="delBids" tabindex="-1" role="dialog" aria-labelledby="delBidsLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="delBidsLabel">Are you sure you want to delete?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/cancel_bid">
+                            <input type="hidden" name="caretakerName" id="caretakerName"> 
+                            <input type="hidden" name="petName" id="petName"> 
+                            <input type="hidden" name="startDate" id="startDate"> 
+                            <input type="hidden" name="endDate" id="endDate">                          
+                            <div class="text-right">
+								<button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <!-- Add Reviews Modal -->
+		<div class="modal fade" id="addReviews" tabindex="-1" role="dialog" aria-labelledby="addReviewsLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addReviewsLabel">Add Review</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/add_review" class="needs-validation" id="addreviewform">
+                            <input type="hidden" name="caretakerName" value="" id="caretakerName">
+                            <input type="hidden" name="petName" value="" id="petName">
+                            <input type="hidden" name="startDate" value="" id="startDate">
+                            <input type="hidden" name="endDate" value="" id="endDate">
+                            <div class="form-group">
+                                <label for="inputRatings">Ratings</label>
+                                <select class="form-control" id="inputRatings" name="rating" required>
+                                    <option value='' selected disabled>- Select your ratings</option>
+                                    <option value='1'>1</option>
+                                    <option value='2'>2</option>
+                                    <option value='3'>3</option>
+                                    <option value='4'>4</option>
+                                    <option value='5'>5</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputReviews">Reviews</label>
+                                <textarea class="form-control" id="inputReviews" rows="3" name="review" placeholder="Enter your reviews" required></textarea>
+                            </div>
+							<div class="text-right">
+								<button class="btn btn-primary" type="submit">Submit</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+		
+        <%- include bottomscript.ejs %>
+        <script>
+			$(document).ready(function() {
+				$('#pendingBidTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#activeBidTable').DataTable();
+            } );
+            $(document).ready(function() {
+				$('#pastBidTable').DataTable();
+            } );
+            $('#addReviews').on('hidden.bs.modal', function (e) {
+				$('#addReviews form')[0].reset();
+            })
+            $('#delBids').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var ongoingBids = JSON.parse(htmlDecode("<%= JSON.stringify(pet_owner_ongoing_biddings) %>"));
+                $('#delBids #caretakerName').val(ongoingBids[index].ctaker_uname);
+                $('#delBids #petName').val(ongoingBids[index].pet_name);
+                $('#delBids #startDate').val(ongoingBids[index].start_date);
+                $('#delBids #endDate').val(ongoingBids[index].end_date);
+            })
+            $('#addReviews').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var pastBids = JSON.parse(htmlDecode("<%= JSON.stringify(pet_owner_past_biddings) %>"));
+                $('#addReviews #caretakerName').val(pastBids[index].ctaker_uname);
+                $('#addReviews #petName').val(pastBids[index].pet_name);
+                $('#addReviews #startDate').val(pastBids[index].start_date);
+                $('#addReviews #endDate').val(pastBids[index].end_date);
+            })
+		</script>
+    </body>
+</html>
+
+

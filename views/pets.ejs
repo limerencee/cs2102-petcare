@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>PetCare</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="stylesheets/index.css" rel="stylesheet">
+  </head>
+	<body id="page-top" style="background-color: #D7CCC8;">
+		<%- include navbar.ejs %>
+		<div id="wrapper">
+			<%- include sidebar.ejs %>
+			<div id="content-wrapper">
+				<div class="container-fluid"">
+                    <% if (status_add === 'pass') { %>
+                        <div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= add_msg %></div>
+                    <% } else if (status_add === 'fail') { %>
+                        <div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= add_msg %></div>
+                    <% } %>
+
+                    <% if (status_delete === 'pass') { %>
+                        <div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= delete_msg %></div>
+                    <% } else if (status_delete === 'fail') { %>
+                        <div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= delete_msg %></div>
+                    <% } %>
+
+                    <% if (status_update === 'pass') { %>
+                        <div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= update_msg %></div>
+                    <% } else if (status_update === 'fail') { %>
+                        <div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= update_msg %></div>
+                    <% } %>
+                    <div class="card mb-3 border-0">
+                        <div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;"><i class="fa fa-paw"></i> My Pets</span>
+								<div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addPets"><i class="fas fa-plus"></i> &nbsp; Add</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+                            <% if (user_pets_table.length === 0) { %>
+                            <div class="alert alert-secondary" role="alert">
+                                <i class="fas fa-info-circle"></i> &nbsp; No Pets Added.
+                            </div>
+                            <% } %>
+
+                            <% if (user_pets_table.length > 0) { %>
+                                <% for (var i = 0; i < user_pets_table.length; i += 3) {%>
+                                    <% if (i === 0 || i % 3 === 0) { %>
+                                        <div class="row pt-2 pb-2">
+                                    <% } %>
+                                    <% for (var a = i; a < i+3; a++ ) { %>
+                                        <% if (a < user_pets_table.length) { %>
+                                            <div class="col-md-4">
+                                                <div class="card shadow">
+                                                    <div class="card-header" style="background-color: #352526; padding: 3px; "></div>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h5 class="card-title"><%= user_pets_table[a].pet_name %></h5> 
+                                                        <div>
+                                                            <span class="badge badge-warning"><%= user_pets_table[a].pet_type %></span> 
+                                                            <% if (!(user_pets_table[a].gender == null || user_pets_table[a].gender === '')) { %>
+                                                                <span class="badge badge-warning"><%= user_pets_table[a].gender %></span>
+                                                            <% } %>
+                                                        </div>
+                                                        
+                                                        <% if (user_pets_table[a].special_needs == null || user_pets_table[a].special_needs === '') { %>
+                                                            <p class="card-text mt-2">No special needs</p>
+                                                        <% } else { %>
+                                                            <p class="card-text mt-2"><%= user_pets_table[a].special_needs %></p>
+                                                        <% } %>
+                                                        <div class="row ml-auto pr-2">
+                                                            <button class="btn btn-success" data-toggle="modal" data-val="<%= a %>" data-target="#editPets"><i class="fas fa-edit"></i></button>
+                                                            &nbsp;
+                                                            <button class="btn btn-danger" data-toggle="modal" data-val="<%= a %>" data-target="#delPets"><i class="fas fa-times"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (i === 0 || i % 3 === 0) { %>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            <% } %>
+                            
+                        </div>
+					</div>
+					
+                    
+                    
+				</div>
+			</div>
+        </div>
+        <!-- Add Pets Modal -->
+		<div class="modal fade" id="addPets" tabindex="-1" role="dialog" aria-labelledby="addPetsLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addPetsLabel">Add Pet Information</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/pets_add" class="needs-validation" id="addpetform">
+                            <div class="form-group">
+                                <label for="inputPetName">Pet Name</label>
+                                <input type="text" class="form-control" id="inputPetName" placeholder="Enter your pet name" required="required" name="petName">
+                                <small id="nameHelpBlock" class="form-text text-muted">
+									Pet name must be between 3-16 characters.
+								</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPetType">Pet Type</label>
+                                <select class="form-control" id="inputPetType" name="petType" required>
+                                    <option value='' selected disabled>- Select your pet's type -</option>
+                                    <% for(var i = 0; i < pet_types_table.length; i++) { %>
+                                        <option value='<%= pet_types_table[i].pet_type %>'><%= pet_types_table[i].pet_type %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPetGender">Gender</label>
+                                <select class="form-control" id="inputPetGender" name="petGender">
+                                    <option value='' selected disabled>- Select your pet's gender -</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                                <small id="genderHelpBlock" class="form-text text-muted">
+									Optional    
+								</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputSpecialNeeds">Special Needs</label>
+                                <textarea class="form-control" id="inputSpecialNeeds" rows="3" name="specialNeeds" placeholder="Enter your pet's special needs"></textarea>
+                                <small id="specialNeedsHelpBlock" class="form-text text-muted">
+									Optional    
+								</small>
+                            </div>
+							<div class="text-right">
+								<button class="btn btn-primary" type="submit">Submit</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+        
+        <!-- Edit Pets Modal -->
+        <div class="modal fade" id="editPets" tabindex="-1" role="dialog" aria-labelledby="editPetsLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPetsLabel">Edit Pet Information</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/pets_update" id="editpetform">
+                            <div class="form-group">
+                                <label for="inputEditPetName">Pet Name</label>
+                                <input type="text" class="form-control" id="inputEditPetName" required="required" name="petName" value="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEditPetType">Pet Type</label>
+                                <select class="form-control" id="inputEditPetType" name="petType">
+                                    <option value='' disabled>- Select your pet's type -</option>
+                                    <% for(var i = 0; i < pet_types_table.length; i++) { %>
+                                        <option value='<%= pet_types_table[i].pet_type %>'><%= pet_types_table[i].pet_type %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEditPetGender">Gender</label>
+                                <select class="form-control" id="inputEditPetGender" name="petGender">
+                                    <option value='' selected disabled>- Select your pet's gender -</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                                <small id="genderHelpBlock" class="form-text text-muted">
+									Optional    
+								</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEditSpecialNeeds">Special Needs</label>
+                                <textarea class="form-control" id="inputEditSpecialNeeds" rows="3" name="specialNeeds" placeholder="Enter your pet's special needs"></textarea>
+                                <small id="specialNeedsHelpBlock" class="form-text text-muted">
+									Optional    
+								</small>
+                            </div>
+							<div class="text-right">
+								<button class="btn btn-primary" type="submit">Submit</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Pets Modal -->
+		<div class="modal fade" id="delPets" tabindex="-1" role="dialog" aria-labelledby="delPetsLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="delPetsLabel">Are you sure you want to delete?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/pets_delete">
+                            <input type="hidden" name="petName" value="" id="delpetName">                           
+                            <div class="text-right">
+								<button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+        
+        <%- include bottomscript.ejs %>
+        <script>
+			$('#addPets').on('hidden.bs.modal', function (e) {
+				$('#addPets form')[0].reset();
+            })
+
+            $('#delPets').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var user_pets = JSON.parse(htmlDecode("<%= JSON.stringify(user_pets_table) %>"));
+                $('#delPets #delpetName').val(user_pets[index].pet_name);
+            })
+
+            $('#editPets').on('show.bs.modal', function (e) {
+                var index = $(e.relatedTarget).data('val');
+                var user_pets = JSON.parse(htmlDecode("<%= JSON.stringify(user_pets_table) %>"));
+                $('#editPets #inputEditPetName').val(user_pets[index].pet_name);
+                $('#editPets #inputEditPetType').val(user_pets[index].pet_type);
+                if (user_pets[index].gender == null) {
+                    $('#editPets #inputEditPetGender').val('');
+                } else {
+                    $('#editPets #inputEditPetGender').val(user_pets[index].gender);
+                }
+                if (user_pets[index].special_needs == null) {
+                    $('#editPets #inputEditSpecialNeeds').val('');
+                } else {
+                    $('#editPets #inputEditSpecialNeeds').val(user_pets[index].special_needs);
+                }
+            })
+		</script>
+  </body>
+</html>
+

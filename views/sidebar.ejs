@@ -1,0 +1,35 @@
+<!-- Sidebar -->
+<ul class="sidebar navbar-nav">
+
+	<!-- Dashboard button -->
+	<li class="nav-item <%= page==="dashboard" ? "active" : "" %>">
+		<a class="nav-link" href="<%= page==="dashboard" ? "#" : "/dashboard" %>">
+			<i class="fas fa-tv"></i> &nbsp;
+			<span>Dashboard</span>
+		</a>
+	</li>
+
+	<!-- Jobs button -->
+	<% if (is_caretaker) { %>
+	<li class="nav-item <%= page==="jobs" ? "active" : "" %>">
+		<a class="nav-link" href="<%= page==="jobs" ? "#" : "/jobs" %>">
+			<i class="fas fa-fw fa-briefcase"></i> &nbsp;
+			<span>Jobs</span></a>
+	</li>
+	<% } %>
+
+	<!-- Biddings button -->
+	<li class="nav-item <%= page==="biddings" ? "active" : "" %>">
+		<a class="nav-link" href="<%= page==="biddings" ? "#" : "/biddings" %>">
+			<i class="fa fa-gavel"></i> &nbsp;
+			<span>Biddings</span></a>
+	</li>
+
+	<!-- Pets button -->
+	<li class="nav-item <%= page==="pets" ? "active" : "" %>">
+		<a class="nav-link" href="<%= page==="pets" ? "#" : "/pets" %>">
+			<i class="fa fa-paw"></i> &nbsp;
+			<span>Pets</span>
+		</a>
+	</li>
+</ul>

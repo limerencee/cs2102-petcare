@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>PetCare</title>
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="stylesheets/index.css" rel="stylesheet">
+  </head>
+	<body id="page-top" style="background-color: #D7CCC8;">
+		<%- include navbar.ejs %>
+		
+		<div id="wrapper">
+			<%- include admin_sidebar.ejs %>
+			
+			<div id="content-wrapper">
+				<div class="container-fluid">
+					<% if (status_fireCaretaker === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= fireCaretaker_msg %></div>
+					<% } else if (status_fireCaretaker === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= fireCaretaker_msg %></div>
+					<% } %>
+
+					<% if (status_delUser === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= delUser_msg %></div>
+					<% } else if (status_delUser === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= delUser_msg %></div>
+					<% } %>
+
+					<% if (status_addAdminAccount === 'pass') { %>
+						<div class="alert alert-success" role="alert"><i class="fas fa-check"></i>&nbsp;&nbsp;<%= addAdminAccount_msg %></div>
+					<% } else if (status_addAdminAccount === 'fail') { %>
+						<div class="alert alert-danger" role="alert"><i class="fas fa-times"></i>&nbsp;&nbsp;<%= addAdminAccount_msg %></div>
+					<% } %>
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;">Care Takers</span>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover" id="caretakersTable" width="100%" cellspacing="0">
+									<thead>
+										<tr>
+											<th>Basis</th>
+											<th>Username</th>
+											<th>Email</th>
+											<th>Average Rating</th>
+											<th>Pets Under Care</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for (var i = 0; i < caretakersList.length; i++) { %>
+											<tr>
+												<td><%= caretakersList[i].type.toUpperCase() %></td>
+												<td><%= caretakersList[i].username %></td>
+												<td><%= caretakersList[i].email %></td>
+												<td><%= parseFloat(caretakersList[i].avg_rating).toFixed(2)  %></td>
+												<td><%= caretakersList[i].current_pets_number %></td>
+												<td>
+													<button class="btn btn-success" data-toggle="modal" data-target="#viewPayrollModal" data-username="<%= caretakersList[i].username %>">View Payroll</button>
+													<button class="btn btn-danger" data-toggle="modal" data-target="#fireCaretakersModal" data-username="<%= caretakersList[i].username %>">Fire</button>
+												</td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;">Pet Owners</span>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover" id="petOwnerTable" width="100%" cellspacing="0">
+									<thead>
+										<tr>
+											<th>Username</th>
+											<th>Email</th>
+											<th>Caretaker</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for (var i = 0; i < petownersList.length; i++) { %>
+											<tr>
+												<td><%= petownersList[i].username %></td>
+												<td><%= petownersList[i].email %></td>
+												<td><%= petownersList[i].is_caretaker %></td>
+												<td><button class="btn btn-danger" data-toggle="modal" data-target="#delAccountModal" data-username="<%= petownersList[i].username %>">Delete Account</button></td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;">New/Inactive Users</span>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover" id="noRoleTable" width="100%" cellspacing="0">
+									<thead>
+										<tr>
+											<th>Username</th>
+											<th>Email</th>
+											<th>Creation time</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for (var i = 0; i < noRoleUserList.length; i++) { %>
+											<tr>
+												<td><%= noRoleUserList[i].username %></td>
+												<td><%= noRoleUserList[i].email %></td>
+												<td><%= noRoleUserList[i].created_at %></td>
+												<td><button class="btn btn-danger" data-toggle="modal" data-target="#delAccountModal" data-username="<%= noRoleUserList[i].username %>">Delete Account</button></td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D;">
+							<div class="d-flex align-items-center">
+								<span class="mr-auto" style="color: #fff;">Admin</span>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table table-hover" id="adminTable" width="100%" cellspacing="0">
+									<thead>
+										<tr>
+											<th>Username</th>
+											<th>Email</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for (var i = 0; i < adminList.length; i++) { %>
+											<tr>
+												<td><%= adminList[i].username %></td>
+												<td><%= adminList[i].email %></td>
+												<td><button class="btn btn-danger" data-toggle="modal" data-target="#delAccountModal" data-username="<%= adminList[i].username %>">Delete Account</button></td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mb-3 border-0">
+						<div class="card-header" style="background-color: #435D7D; color: #fff;">
+							Create admin account
+						</div>
+						<form method="post" action="/create_admin_account" class="needs-validation" id="createAdminform" oninput='validate_admin_password()'>
+							<div class="card-body">
+								<div class="form-group row">
+									<label for="inputAdminUsername" class="col-sm-2 col-form-label"><b>Username:</b></label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" id="inputAdminUsername" placeholder="Username" name="username" required>
+										<small id="usernameHelpBlock" class="form-text text-muted">
+											Username must be between 3-16 characters.
+										</small>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label for="inputAdminGender" class="col-sm-2 col-form-label"><b>Gender:</b></label>
+									<div class="col-sm-4">
+										<select class="form-control" id="inputAdminGender" name="gender" required>
+											<option value='' selected disabled>- Select your gender -</option> 
+											<option value='male'>Male</option>
+											<option value='female'>Female</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label for="inputAdminEmail" class="col-sm-2 col-form-label"><b>Email:</b></label>
+									<div class="col-sm-4">
+										<input type="email" class="form-control" id="inputAdminEmail" placeholder="Email" name="email" required>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label for="inputAdminPassword" class="col-sm-2 col-form-label"><b>Password:</b></label>
+									<div class="col-sm-4">
+										<input type="password" class="form-control" id="inputAdminPassword" placeholder="Password" name="password" pattern=".{8,}" required>
+										<small id="passwordHelpBlock" class="form-text text-muted">
+											Minimum 8 characters
+										</small>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label for="inputAdminCfmPassword" class="col-sm-2 col-form-label"><b>Confirm Password:</b></label>
+									<div class="col-sm-4">
+										<input type="password" class="form-control" id="inputAdminCfmPassword" placeholder="Confirm Password" name="cfmpassword" required>
+									</div>
+								</div>
+								<button type="submit" class="btn btn-primary">Create</button>
+							</div>
+						</form>
+					</div>	
+					
+				</div>
+			</div>
+		</div>
+
+		<!-- View Payroll Modal -->
+		<div class="modal fade" id="viewPayrollModal" tabindex="-1" role="dialog" aria-labelledby="viewPayrollLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewPayrollLabel">Payroll</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="mb-3" id="petTypePopularity">
+							
+						</div>
+						<div class="table-responsive">
+							<table class="table table-hover" id="payrollTable" width="100%" cellspacing="0">
+								<thead>
+									<tr>
+										<th>Year</th>
+										<th>Month</th>
+										<th>Working days</th>
+										<th>Monthly Earning</th>
+										<th>Monthly Salary</th>
+									</tr>
+								</thead>
+								<tbody>
+									
+								</tbody>
+							</table>
+						</div>
+
+						<div class="text-right mt-3">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		 <!-- Fire Caretaker Modal -->
+		 <div class="modal fade" id="fireCaretakersModal" tabindex="-1" role="dialog" aria-labelledby="fireCaretakersLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="fireCaretakersLabel">Are you sure you want to fire?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/fire_caretaker">
+                            <input type="hidden" name="caretakerName" value="" id="delcaretakerName">                           
+                            <div class="text-right">
+								<button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Delete Account Modal -->
+		<div class="modal fade" id="delAccountModal" tabindex="-1" role="dialog" aria-labelledby="delAccountLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="delAccountLabel">Are you sure you want to delete this account?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form method="post" action="/delete_account">
+                            <input type="hidden" name="username" value="" id="username">                           
+                            <div class="text-right">
+								<button class="btn btn-primary" type="submit">Yes</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+
+		<%- include bottomscript.ejs %>
+
+		<script>
+			$(document).ready(function() {
+				$('#payrollTable').DataTable();
+			});
+			$('#fireCaretakersModal').on('show.bs.modal', function (e) {
+                var username = $(e.relatedTarget).data('username');
+                $('#fireCaretakersModal #delcaretakerName').val(username);
+			})
+			$('#delAccountModal').on('show.bs.modal', function (e) {
+                var username = $(e.relatedTarget).data('username');
+                $('#delAccountModal #username').val(username);
+            })
+			$('#caretakersTable button').on('click', function (e) {
+				var username = $(this).data('username');
+				$('#viewPayrollLabel').html("Payroll for: " + username);
+				$.ajax({
+					type: "POST",
+					url: "/admin_users_payroll",
+					data: {
+						username: username
+					},
+					success: function(json) {
+						var petTypeArr = []
+						jQuery.each(json.topPetTypeForEachCaretaker, function(i, data){
+							petTypeArr.push(data.pet_type)
+						})
+						$('#petTypePopularity').html("<b>Most Popular Pet Type:</b> " + petTypeArr.join(', '));
+						var t = $('#payrollTable').DataTable();
+						jQuery.each(json.payroll, function(i, data) {
+							t.row.add( [
+								data.year,
+								data.month,
+								data.pet_days,
+								"&#36;" + parseFloat(data.monthly_earnings).toFixed(2),
+								"&#36;" + parseFloat(data.monthly_salary).toFixed(2)
+							] ).draw( false );
+						});
+					}
+				});
+			});
+			$(document).ready(function() {
+				$('#caretakersTable').DataTable();
+			} );
+			$(document).ready(function() {
+				$('#petOwnerTable').DataTable();
+			} );
+			$(document).ready(function() {
+				$('#noRoleTable').DataTable();
+			} );
+			$(document).ready(function() {
+				$('#adminTable').DataTable();
+			} );
+			$('#viewPayrollModal').on('hidden.bs.modal', function (e) {
+				var t = $('#payrollTable').DataTable();
+				t.clear().draw();
+			});
+			function validate_admin_password() {
+				var password = document.getElementById("inputAdminPassword");
+				var cfmPassword = document.getElementById("inputAdminCfmPassword");
+				cfmPassword.setCustomValidity(password.value !== cfmPassword.value 
+												? "Passwords do not match." 
+												: "");
+			}
+			
+		</script>
+
+  </body>
+</html>
