@@ -1,4 +1,4 @@
-# CS2102_2021_S1_Team42 (PetCare)
+# PetCare
 
 ## PetCare Report
 [PetCare Report](#)
